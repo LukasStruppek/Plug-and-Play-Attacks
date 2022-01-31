@@ -1,0 +1,128 @@
+# Plug & Play Attacks: Towards Robust and Flexible Model Inversion Attacks
+
+  <center>
+  <img src="images/ppa_samples.jpg" alt="PPA Examples"  height=265>
+  </center>
+
+Abstract: *Model inversion attacks (MIAs) aim to create synthetic images that reflect the class-wise characteristics from a target classifier's training data by exploiting the model's learned knowledge. Previous research has developed generative MIAs using generative adversarial networks (GANs) as image priors that are tailored to a specific target model. This makes the attacks time- and resource-consuming, inflexible, and susceptible to distributional shifts between datasets. To overcome these drawbacks, we present Plug & Play Attacks that loosen the dependency between the target model and image prior and enable the use of a single trained GAN to attack a broad range of targets with only minor attack adjustments needed. Moreover, we show that powerful MIAs are possible even with publicly available pre-trained GANs and under strong distributional shifts, whereas previous approaches fail to produce meaningful results. Our extensive evaluation confirms the improved robustness and flexibility of Plug & Play Attacks and their ability to create high-quality images revealing sensitive class characteristics.*  
+[Arxiv Preprint (PDF)](https://arxiv.org/pdf/2201.12179.pdf)
+
+## Model Inversion Attacks
+  <center>
+  <img src="images/attack_pipeline.jpg" alt="Attack Pipeline"  height=170>
+  </center>
+
+Model inversion attacks (MIAs) intend to create synthetic images that reflect the characteristics of a specific class from a model's training data. For face recognition, the target model is trained to classify the identities of a set of people. An adversary without specific knowledge about the identities but with access to the trained model then tries to create synthetic facial images that share characteristic features with the targeted identities, such as gender, eye color, and facial shape. More intuitively, the adversary can be interpreted as a phantom sketch artist who aims to reconstruct faces based on the knowledge extracted from a target model.
+
+# Setup and Run Attacks
+
+## Setup Docker Container
+The easiest way to perform the attacks is to run the code in a Docker container. To build the Docker image run the following script:
+
+```bash
+docker build -t plug_and_play_attacks  .
+```
+
+To create and start a Docker container run the following command from the project's root:
+
+```bash
+docker run --rm --shm-size 16G --name ppa --gpus '"device=0"' -v $(pwd):/workspace -it plug_and_play_attacks bash
+```
+
+To add additional GPUs, modify the option ```'"device=0,1,2"'``` accordingly. Detach from the container using ```Ctrl+P``` followed by ```Ctrl+Q```.
+
+## Setup StyleGAN2
+For using our attacks with StyleGAN2, clone the official [StyleGAN2-ADA-Pytorch](https://github.com/NVlabs/stylegan2-ada-pytorch) repo into the project's root folder and remove its git specific folders and files. 
+```
+git clone https://github.com/NVlabs/stylegan2-ada-pytorch.git
+rm -r --force stylegan2-ada-pytorch/.git/
+rm -r --force stylegan2-ada-pytorch/.github/
+rm --force stylegan2-ada-pytorch/.gitignore
+```
+
+To download the pre-trained weights, run the following command from the project's root folder or copy the weights into ```stylegan2-ada-pytorch```:
+```bash
+wget https://nvlabs-fi-cdn.nvidia.com/stylegan2-ada-pytorch/pretrained/ffhq.pkl -P stylegan2-ada-pytorch/
+
+```
+NVIDIA provides the following pre-trained models: ```ffhq.pkl, metfaces.pkl, afhqcat.pkl, afhqdog.pkl, afhqwild.pkl, cifar10.pkl, brecahad.pkl```. Adjust the command above accordingly. For the training and resolution details, please visit the official repo.
+
+## Setup Weights & Biases
+We rely on Weights & Biases for experiment tracking and result storage. We rely on Weights & Biases for experiment tracking and result storage. A free account is needed at [wandb.ai](https://wandb.ai/site) to track the experiments. Note that we do not have any commercial relationship with Weights & Biases. 
+
+To connect your account to Weights & Biases, run the following command and add your API key:
+```bash
+wandb init
+```
+You can find the key at [wandb.ai/settings](https://wandb.ai/settings). After the key was added, stop the script with ```Ctrl+C```.
+
+## Prepare Datasets
+We support [FaceScrub](http://vintage.winklerbros.net/facescrub.html), [CelebA](https://mmlab.ie.cuhk.edu.hk/projects/CelebA.html) and [Stanford Dogs](http://vision.stanford.edu/aditya86/ImageNetDogs/) as datasets to train the target models. Please follow the instructions on the websites to download the datasets. Place all datasets in the folder ```data``` and make sure that the following structure is kept:
+
+    .
+    ├── data       
+        ├── celeba
+            ├── img_align_celeba
+            ├── identity_CelebA.txt
+            ├── list_attr_celeba.txt
+            ├── list_bbox_celeba.txt
+            ├── list_eval_partition.txt
+            ├── list_landmarks_align_celeba.txt
+            └── list_landmarks_celeba.txt
+        ├── facescrub
+            ├── actors
+                ├── faces
+                └── images
+            └── actresses
+                ├── faces
+                └── images
+        ├── stanford_dogs
+            ├── Annotation
+            ├── Images
+            ├── file_list.mat
+            ├── test_data.mat
+            ├── test_list.mat
+            ├── train_data.mat
+            └── train_list.mat
+
+For CelebA, we used a custom crop of the images using the [HD CelebA Cropper](https://github.com/LynnHo/HD-CelebA-Cropper) to increase the resolution of the cropped and aligned samples. We cropped the images using a face factor of 0.65 and resized them to size 224x224 with bicubic interpolation. The other parameters were left at default. Note that we only use the 1,000 identities with the most number of samples out of 10,177 available identities. 
+            
+## Train Target Models
+Our code currently allows training all ResNet, ResNeSt, DenseNet, and Inception-v3 models stated at [pytorch.org/vision/stable/models](https://pytorch.org/vision/stable/models.html). To add support for other models, you need to modify the method ```_build_model``` in ```models/classifier.py```, add the new model, and adjust its output layer's size.
+
+To define the model and training configuration, you need to create a configuration file. We provide a example configuration with explanations at ```configs/training/default_training.yaml```. To train the target models accordingly to our paper, we provide a training configuration for each dataset. You only need to adjust the architecture used and the Weights & Biases configuration - all other parameters are identical for each target dataset. Only the batch size has to be adjusted for larger models.
+
+After a training configuration file has been created, run the following command to start the training with the specified configuration:
+```bash
+python train_target.py -c=configs/training/default_training.yaml
+```
+After the optimization is performed, the results are automatically evaluated. All results together with the initial, optimized, and selected latent vectors are stored at WandB.
+
+## Perform Attacks
+To perform our attacks, prepare an attack configuration file including the WandB run paths of the target and evaluation models. We provide an example configuration with explanations at ```configs/attacking/default_attacking.yaml```. We further provide configuration files to reproduce the various attack results stated in our paper. You only need to adjust the run paths for each dataset combination, and possibly the batch size.
+
+After an attack configuration file has been created, run the following command to start the attack with the specified configuration:
+```bash
+python attack.py -c=configs/attacking/default_attacking.yaml
+```
+All results including the metrics will be stored at WandB for easy tracking and comparison.
+
+## Citation
+If you build upon our work, please don't forget to cite us.
+```
+@misc{struppek2022plug,
+    title={Plug & Play Attacks: Towards Robust and Flexible Model Inversion Attacks},
+    author={Lukas Struppek and Dominik Hintersdorf and Antonio De Almeida Correia and Antonia Adler and Kristian Kersting},
+    year={2022},
+    eprint={2201.12179},
+    archivePrefix={arXiv},
+    primaryClass={cs.LG}
+}
+```
+
+## Implementation Credits
+Some of our implementations rely on other repos. We want to thank the authors for making their code publicly available. 
+For license details, refer to the corresponding files in our repo. For more details on the specific functionality, please visit the corresponding repos.
+- FID Score: https://github.com/mseitzer/pytorch-fid
+- Stanford Dogs Dataset Class: https://github.com/zrsmithson/Stanford-dogs/blob/master/data/stanford_dogs_data.py
+- FaceNet: https://github.com/timesler/facenet-pytorch
