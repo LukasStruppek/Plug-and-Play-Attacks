@@ -1,7 +1,7 @@
 # Plug & Play Attacks: Towards Robust and Flexible Model Inversion Attacks
 
   <center>
-  <img src="images/ppa_samples.jpg" alt="PPA Examples"  height=265>
+  <img src="images/ppa_samples.jpg" alt="PPA Examples"  height=260>
   </center>
 
 Abstract: *Model inversion attacks (MIAs) aim to create synthetic images that reflect the class-wise characteristics from a target classifier's training data by exploiting the model's learned knowledge. Previous research has developed generative MIAs using generative adversarial networks (GANs) as image priors that are tailored to a specific target model. This makes the attacks time- and resource-consuming, inflexible, and susceptible to distributional shifts between datasets. To overcome these drawbacks, we present Plug & Play Attacks that loosen the dependency between the target model and image prior and enable the use of a single trained GAN to attack a broad range of targets with only minor attack adjustments needed. Moreover, we show that powerful MIAs are possible even with publicly available pre-trained GANs and under strong distributional shifts, whereas previous approaches fail to produce meaningful results. Our extensive evaluation confirms the improved robustness and flexibility of Plug & Play Attacks and their ability to create high-quality images revealing sensitive class characteristics.*  
@@ -9,7 +9,7 @@ Abstract: *Model inversion attacks (MIAs) aim to create synthetic images that re
 
 ## Model Inversion Attacks
   <center>
-  <img src="images/attack_pipeline.jpg" alt="Attack Pipeline"  height=170>
+  <img src="images/attack_pipeline.jpg" alt="Attack Pipeline"  height=165>
   </center>
 
 Model inversion attacks (MIAs) intend to create synthetic images that reflect the characteristics of a specific class from a model's training data. For face recognition, the target model is trained to classify the identities of a set of people. An adversary without specific knowledge about the identities but with access to the trained model then tries to create synthetic facial images that share characteristic features with the targeted identities, such as gender, eye color, and facial shape. More intuitively, the adversary can be interpreted as a phantom sketch artist who aims to reconstruct faces based on the knowledge extracted from a target model.
@@ -124,5 +124,5 @@ If you build upon our work, please don't forget to cite us.
 Some of our implementations rely on other repos. We want to thank the authors for making their code publicly available. 
 For license details, refer to the corresponding files in our repo. For more details on the specific functionality, please visit the corresponding repos.
 - FID Score: https://github.com/mseitzer/pytorch-fid
-- Stanford Dogs Dataset Class: https://github.com/zrsmithson/Stanford-dogs/blob/master/data/stanford_dogs_data.py
+- Stanford Dogs Dataset Class: https://github.com/zrsmithson/Stanford-dogs
 - FaceNet: https://github.com/timesler/facenet-pytorch
