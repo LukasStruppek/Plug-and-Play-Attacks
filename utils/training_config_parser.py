@@ -125,14 +125,15 @@ class TrainingConfigParser:
         transformation_list.append(T.ToTensor())
         if mode == 'training' and 'transformations' in self._config:
             transformations = self._config['transformations']
-            for transform, args in transformations.items():
-                if not hasattr(T, transform):
-                    raise Exception(
-                        f'{transform} is no valid transformation. Please write the type exactly as the Torchvision class'
-                    )
-                else:
-                    transformation_class = getattr(T, transform)
-                    transformation_list.append(transformation_class(**args))
+            if transformations != None:
+                for transform, args in transformations.items():
+                    if not hasattr(T, transform):
+                        raise Exception(
+                            f'{transform} is no valid transformation. Please write the type exactly as the Torchvision class'
+                        )
+                    else:
+                        transformation_class = getattr(T, transform)
+                        transformation_list.append(transformation_class(**args))
 
         elif mode == 'test' and 'celeba' in dataset_name:
             if isinstance(image_size, list):
