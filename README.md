@@ -55,7 +55,13 @@ To connect your account to Weights & Biases, run the following command and add y
 ```bash
 wandb init
 ```
-You can find the key at [wandb.ai/settings](https://wandb.ai/settings). After the key was added, stop the script with ```Ctrl+C```.
+You can find the key at [wandb.ai/settings](https://wandb.ai/settings). After the key was added, stop the script with ```Ctrl+C```. 
+
+Our Dockerfile also allows storing the API key directly in the image. For this, provide the key as an argument when building the image:
+```bash
+docker build -t plug_and_play_attacks --build-arg wandb_key=xxxxxxxxxx .
+```
+
 
 ## Prepare Datasets
 We support [FaceScrub](http://vintage.winklerbros.net/facescrub.html), [CelebA](https://mmlab.ie.cuhk.edu.hk/projects/CelebA.html) and [Stanford Dogs](http://vision.stanford.edu/aditya86/ImageNetDogs/) as datasets to train the target models. Please follow the instructions on the websites to download the datasets. Place all datasets in the folder ```data``` and make sure that the following structure is kept:
