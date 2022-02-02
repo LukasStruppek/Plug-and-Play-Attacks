@@ -133,3 +133,6 @@ dmypy.json
 /wandb
 /results
 /weights
+
+# data
+/data
