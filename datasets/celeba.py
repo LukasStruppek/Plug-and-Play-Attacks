@@ -128,7 +128,8 @@ class CustomCelebA(VisionDataset):
 
     def __getitem__(self, index: int) -> Tuple[Any, Any]:
         file_path = os.path.join(self.root, "img_align_celeba", self.filename[index])
-        file_path = file_path.replace('.jpg', '.png')
+        if os.path.exists(file_path) == False:
+            file_path = file_path.replace('.jpg', '.png')
         X = PIL.Image.open(file_path)
 
         target: Any = []
