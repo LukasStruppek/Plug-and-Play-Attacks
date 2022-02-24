@@ -122,7 +122,7 @@ class CustomCelebA(VisionDataset):
         self.bbox = torch.as_tensor(bbox[mask].values)
         self.landmarks_align = torch.as_tensor(landmarks_align[mask].values)
         self.attr = torch.as_tensor(attr[mask].values)
-        self.attr = (self.attr + 1) // 2  # map from {-1, 1} to {0, 1}
+        self.attr = torch.div(self.attr + 1, 2, rounding_mode='floor') # map from {-1, 1} to {0, 1}
         self.attr_names = list(attr.columns)
 
 
