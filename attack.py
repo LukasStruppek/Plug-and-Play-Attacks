@@ -4,6 +4,7 @@ import random
 from copy import deepcopy
 from collections import Counter
 import csv
+from pathlib import Path
 
 import numpy as np
 import torch
@@ -120,6 +121,7 @@ def main():
 
     # Log initial vectors
     if config.logging:
+        Path("/results").mkdir(parents=True, exist_ok=True)
         init_w_path = f"results/init_w_{run_id}.pt"
         torch.save(w.detach(), init_w_path)
         wandb.save(init_w_path)
