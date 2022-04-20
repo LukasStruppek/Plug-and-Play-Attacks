@@ -210,42 +210,46 @@ def main():
     ####################################
 
     # Compute attack accuracy with evaluation model on all generated samples
-    evaluation_model = config.create_evaluation_model()
-    evaluation_model = torch.nn.DataParallel(evaluation_model)
-    evaluation_model.to(device)
-    evaluation_model.eval()
-    class_acc_evaluator = ClassificationAccuracy(
-        evaluation_model, device=device)
+    try:
+        evaluation_model = config.create_evaluation_model()
+        evaluation_model = torch.nn.DataParallel(evaluation_model)
+        evaluation_model.to(device)
+        evaluation_model.eval()
+        class_acc_evaluator = ClassificationAccuracy(
+            evaluation_model, device=device)
 
-    acc_top1, acc_top5, predictions, avg_correct_conf, avg_total_conf, target_confidences, maximum_confidences, precision_list = class_acc_evaluator.compute_acc(
-        w_optimized_unselected, targets, synthesis, config, batch_size=batch_size * 2, resize=299, rtpt=rtpt)
-
-    if config.logging:
-        try:
-            filename_precision = write_precision_list(
-                f'results/precision_list_unfiltered_{run_id}', precision_list)
-            wandb.save(filename_precision)
-        except:
-            pass
-    print(
-        f'\nUnfiltered Evaluation of {final_w.shape[0]} images on Inception-v3: \taccuracy@1={acc_top1:4f}',
-        f', accuracy@5={acc_top5:4f}, correct_confidence={avg_correct_conf:4f}, total_confidence={avg_total_conf:4f}'
-    )
-
-    # Compute attack accuracy on filtered samples
-    if config.final_selection:
         acc_top1, acc_top5, predictions, avg_correct_conf, avg_total_conf, target_confidences, maximum_confidences, precision_list = class_acc_evaluator.compute_acc(
-            final_w, final_targets, synthesis, config, batch_size=batch_size*2, resize=299, rtpt=rtpt)
-        if config.logging:
-            filename_precision = write_precision_list(
-                f'results/precision_list_filtered_{run_id}', precision_list)
-            wandb.save(filename_precision)
+            w_optimized_unselected, targets, synthesis, config, batch_size=batch_size * 2, resize=299, rtpt=rtpt)
 
+        if config.logging:
+            try:
+                filename_precision = write_precision_list(
+                    f'results/precision_list_unfiltered_{run_id}', precision_list)
+                wandb.save(filename_precision)
+            except:
+                pass
         print(
-            f'Filtered Evaluation of {final_w.shape[0]} images on Inception-v3: \taccuracy@1={acc_top1:4f}, ',
-            f'accuracy@5={acc_top5:4f}, correct_confidence={avg_correct_conf:4f}, total_confidence={avg_total_conf:4f}'
+            f'\nUnfiltered Evaluation of {final_w.shape[0]} images on Inception-v3: \taccuracy@1={acc_top1:4f}',
+            f', accuracy@5={acc_top5:4f}, correct_confidence={avg_correct_conf:4f}, total_confidence={avg_total_conf:4f}'
         )
-    del evaluation_model
+
+        # Compute attack accuracy on filtered samples
+        if config.final_selection:
+            acc_top1, acc_top5, predictions, avg_correct_conf, avg_total_conf, target_confidences, maximum_confidences, precision_list = class_acc_evaluator.compute_acc(
+                final_w, final_targets, synthesis, config, batch_size=batch_size*2, resize=299, rtpt=rtpt)
+            if config.logging:
+                filename_precision = write_precision_list(
+                    f'results/precision_list_filtered_{run_id}', precision_list)
+                wandb.save(filename_precision)
+
+            print(
+                f'Filtered Evaluation of {final_w.shape[0]} images on Inception-v3: \taccuracy@1={acc_top1:4f}, ',
+                f'accuracy@5={acc_top5:4f}, correct_confidence={avg_correct_conf:4f}, total_confidence={avg_total_conf:4f}'
+            )
+        del evaluation_model
+
+    except Exception:
+        print(traceback.format_exc())
 
     ####################################
     #    FID Score and GAN Metrics     #
@@ -285,9 +289,6 @@ def main():
 
     except Exception:
         print(traceback.format_exc())
-
-    if rtpt:
-        rtpt.step(subtitle=f'Finishing up')
 
     ####################################
     #         Feature Distance         #
@@ -342,6 +343,9 @@ def main():
     ####################################
     #          Finish Logging          #
     ####################################
+
+    if rtpt:
+        rtpt.step(subtitle=f'Finishing up')
 
     # Logging of final results
     if config.logging:
