@@ -6,3 +6,4 @@ opencv-python
 pandas
 pytorch-fid==0.2.1
 scikit-learn==0.24.2
+yapf
