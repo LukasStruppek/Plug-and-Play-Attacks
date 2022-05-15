@@ -1,4 +1,4 @@
-# Plug & Play Attacks: Towards Robust and Flexible Model Inversion Attacks
+# Plug & Play Attacks: Towards Robust and Flexible Model Inversion Attacks (ICML 2022)
 
   <center>
   <img src="images/ppa_samples.jpg" alt="PPA Examples"  height=260>
