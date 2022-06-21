@@ -5,8 +5,8 @@
   </center>
 
 > **Abstract:**
-> *Model inversion attacks (MIAs) aim to create synthetic images that reflect the class-wise characteristics from a target classifier's training data by exploiting the model's learned knowledge. Previous research has developed generative MIAs using generative adversarial networks (GANs) as image priors that are tailored to a specific target model. This makes the attacks time- and resource-consuming, inflexible, and susceptible to distributional shifts between datasets. To overcome these drawbacks, we present Plug & Play Attacks that loosen the dependency between the target model and image prior and enable the use of a single trained GAN to attack a broad range of targets with only minor attack adjustments needed. Moreover, we show that powerful MIAs are possible even with publicly available pre-trained GANs and under strong distributional shifts, whereas previous approaches fail to produce meaningful results. Our extensive evaluation confirms the improved robustness and flexibility of Plug & Play Attacks and their ability to create high-quality images revealing sensitive class characteristics.*  
-[Arxiv Preprint (PDF)](https://arxiv.org/pdf/2201.12179.pdf)
+> *Model inversion attacks (MIAs) aim to create synthetic images that reflect the class-wise characteristics from a target classifier's private training data by exploiting the model's learned knowledge. Previous research has developed generative MIAs that use generative adversarial networks (GANs) as image priors tailored to a specific target model. This makes the attacks time- and resource-consuming, inflexible, and susceptible to distributional shifts between datasets. To overcome these drawbacks, we present Plug & Play Attacks, which relax the dependency between the target model and image prior, and enable the use of a single GAN to attack a wide range of targets, requiring only minor adjustments to the attack. Moreover, we show that powerful MIAs are possible even with publicly available pre-trained GANs and under strong distributional shifts, for which previous approaches fail to produce meaningful results. Our extensive evaluation confirms the improved robustness and flexibility of Plug & Play Attacks and their ability to create high-quality images revealing sensitive class characteristics.*  
+[Full Paper (PDF)](https://arxiv.org/pdf/2201.12179.pdf)
 
 ## Model Inversion Attacks
   <center>
@@ -31,6 +31,11 @@ docker run --rm --shm-size 16G --name ppa --gpus '"device=0"' -v $(pwd):/workspa
 ```
 
 To add additional GPUs, modify the option ```'"device=0,1,2"'``` accordingly. Detach from the container using ```Ctrl+P``` followed by ```Ctrl+Q```.
+
+Our Dockerfile also allows storing a Weights & Biases API key directly in the image. For this, provide the API key as an argument when building the image:
+```bash
+docker build -t plug_and_play_attacks --build-arg wandb_key=xxxxxxxxxx .
+```
 
 ## Setup StyleGAN2
 For using our attacks with StyleGAN2, clone the official [StyleGAN2-ADA-Pytorch](https://github.com/NVlabs/stylegan2-ada-pytorch) repo into the project's root folder and remove its git specific folders and files. 
