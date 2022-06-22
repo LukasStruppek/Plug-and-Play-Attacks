@@ -10,10 +10,14 @@
 
 ## Model Inversion Attacks
   <center>
-  <img src="images/attack_pipeline.jpg" alt="Attack Pipeline"  height=165>
+  <img src="images/attack_pipeline.jpg" alt="Attack Pipeline"  height=160>
   </center>
 
 Model inversion attacks (MIAs) intend to create synthetic images that reflect the characteristics of a specific class from a model's training data. For face recognition, the target model is trained to classify the identities of a set of people. An adversary without specific knowledge about the identities but with access to the trained model then tries to create synthetic facial images that share characteristic features with the targeted identities, such as gender, eye color, and facial shape. More intuitively, the adversary can be interpreted as a phantom sketch artist who aims to reconstruct faces based on the knowledge extracted from a target model.
+
+# Changelog
+- **June 22, 2022** We added a release containing the code and model weights used to perform the attacks and evaluation in our ICML paper. See the [default_attacking_local.yaml](configs/attacking/default_attacking_local.yaml) file on how to use local weight files. To use your own models, you need to extend [classifier.py](models/classifier.py) and, if necessary, [attack_config_parser.py](/utils/attack_config_parser.py) accordingly.
+
 
 # Setup and Run Attacks
 
