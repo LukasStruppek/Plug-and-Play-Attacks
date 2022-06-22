@@ -6,32 +6,56 @@ import torch
 import torch.optim as optim
 import torchvision.transforms as T
 import yaml
-from matplotlib.pyplot import fill
-import wandb
-
 from attacks.initial_selection import find_initial_w
+from matplotlib.pyplot import fill
+from models.classifier import Classifier
+
+import wandb
 from utils.wandb import load_model
 
 
 class AttackConfigParser:
+
     def __init__(self, config_file):
         with open(config_file, 'r') as file:
             config = yaml.safe_load(file)
         self._config = config
 
     def create_target_model(self):
-        model = load_model(self._config['wandb_target_run'])
+        if 'wandb_target_run' in self._config:
+            model = load_model(self._config['wandb_target_run'])
+        elif 'target_model' in self._config:
+            config = self._config['target_model']
+            model = Classifier(num_classes=config['num_classes'],
+                               architecture=config['architecture'])
+            model.load_state_dict(torch.load(config['weights']))
+        else:
+            raise RuntimeError('No target model stated in the config file.')
+
         model.eval()
         self.model = model
         return model
 
     def get_target_dataset(self):
-        api = wandb.Api(timeout=60)
-        run = api.run(self._config['wandb_target_run'])
-        return run.config['Dataset'].strip().lower()
+        try:
+            api = wandb.Api(timeout=60)
+            run = api.run(self._config['wandb_target_run'])
+            return run.config['Dataset'].strip().lower()
+        except:
+            return self._config['dataset']
 
     def create_evaluation_model(self):
-        evaluation_model = load_model(self._config['wandb_evaluation_run'])
+        if 'wandb_evaluation_run' in self._config:
+            evaluation_model = load_model(self._config['wandb_evaluation_run'])
+        elif 'evaluation_model' in self._config:
+            config = self._config['evaluation_model']
+            evaluation_model = Classifier(num_classes=config['num_classes'],
+                                          architecture=config['architecture'])
+            evaluation_model.load_state_dict(torch.load(config['weights']))
+        else:
+            raise RuntimeError(
+                'No evaluation model stated in the config file.')
+
         evaluation_model.eval()
         self.evaluation_model = evaluation_model
         return evaluation_model
@@ -214,7 +238,8 @@ class AttackConfigParser:
     def attack_center_crop(self):
         if 'transformations' in self._config['attack']:
             if 'CenterCrop' in self._config['attack']['transformations']:
-                return self._config['attack']['transformations']['CenterCrop']['size']
+                return self._config['attack']['transformations']['CenterCrop'][
+                    'size']
         else:
             return None
 
@@ -222,7 +247,8 @@ class AttackConfigParser:
     def attack_resize(self):
         if 'transformations' in self._config['attack']:
             if 'Resize' in self._config['attack']['transformations']:
-                return self._config['attack']['transformations']['Resize']['size']
+                return self._config['attack']['transformations']['Resize'][
+                    'size']
         else:
             return None
 
