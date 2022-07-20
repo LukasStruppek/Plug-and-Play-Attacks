@@ -16,11 +16,21 @@
 Model inversion attacks (MIAs) intend to create synthetic images that reflect the characteristics of a specific class from a model's training data. For face recognition, the target model is trained to classify the identities of a set of people. An adversary without specific knowledge about the identities but with access to the trained model then tries to create synthetic facial images that share characteristic features with the targeted identities, such as gender, eye color, and facial shape. More intuitively, the adversary can be interpreted as a phantom sketch artist who aims to reconstruct faces based on the knowledge extracted from a target model.
 
 # Changelog
+- **July 20, 2022** Added GPU memory requirements.
 - **July 18, 2022** Updated BibTex with proceeding information.
 - **June 22, 2022** We added a release containing the code and model weights used to perform the attacks and evaluation in our ICML paper. See the [default_attacking_local.yaml](configs/attacking/default_attacking_local.yaml) file on how to use local weight files. To use your own models, you need to extend [classifier.py](models/classifier.py) and, if necessary, [attack_config_parser.py](/utils/attack_config_parser.py) accordingly.
 
 
 # Setup and Run Attacks
+
+## GPU Memory Requirements
+To provide a reference point for the GPU memory needed to perform the attacks, we measured the memory consumption for attacks against a ResNet-18 model trained on images with size 224x224. The memory consumption mainly depends on the batch size (BS), the target model size, and the StyleGAN2 model size. For our paper, we used V100-SXM3-32GB-H GPUs, but GPUs with smaller memory sizes are also sufficient.
+
+| StyleGAN2 Resolution      | ResNet-18 (BS 20) | ResNet-18 (BS 10) | ResNet-18 (BS 1) |
+| ----------- | ----------- | ----------------------- | ---------------- |
+| 1024x1024   | 24.1 GB     | 15.8 GB                 | 3.2 GB           |
+| 512x512     | 16.3 GB     | 10.8 GB                 | 2.7 GB           |
+| 256x256     |  7.7 GB     |  5.1 GB                 | 2.1 GB           |
 
 ## Setup Docker Container
 The easiest way to perform the attacks is to run the code in a Docker container. To build the Docker image run the following script:
