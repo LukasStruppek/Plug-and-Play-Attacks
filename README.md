@@ -138,7 +138,7 @@ All results including the metrics will be stored at WandB for easy tracking and 
 If you build upon our work, please don't forget to cite us.
 ```
 @inproceedings{struppek2022ppa,
-    title={Plug & Play Attacks: Towards Robust and Flexible Model Inversion Attacks},
+    title={Plug \& Play Attacks: Towards Robust and Flexible Model Inversion Attacks},
     author={Lukas Struppek and Dominik Hintersdorf and Antonio De Almeida Correia and Antonia Adler and Kristian Kersting},
     booktitle = {Proceedings of the 39th International Conference on Machine Learning (ICML)},
     pages = {20522--20545},
