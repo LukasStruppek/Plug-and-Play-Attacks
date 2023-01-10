@@ -39,6 +39,11 @@ The easiest way to perform the attacks is to run the code in a Docker container.
 docker build -t plug_and_play_attacks  .
 ```
 
+Our Dockerfile also allows storing a Weights & Biases API key directly in the image. For this, provide the API key as an argument when building the image:
+```bash
+docker build -t plug_and_play_attacks --build-arg wandb_key=xxxxxxxxxx .
+```
+
 To create and start a Docker container run the following command from the project's root:
 
 ```bash
@@ -47,10 +52,6 @@ docker run --rm --shm-size 16G --name ppa --gpus '"device=0"' -v $(pwd):/workspa
 
 To add additional GPUs, modify the option ```'"device=0,1,2"'``` accordingly. Detach from the container using ```Ctrl+P``` followed by ```Ctrl+Q```.
 
-Our Dockerfile also allows storing a Weights & Biases API key directly in the image. For this, provide the API key as an argument when building the image:
-```bash
-docker build -t plug_and_play_attacks --build-arg wandb_key=xxxxxxxxxx .
-```
 
 ## Setup StyleGAN2
 For using our attacks with StyleGAN2, clone the official [StyleGAN2-ADA-Pytorch](https://github.com/NVlabs/stylegan2-ada-pytorch) repo into the project's root folder and remove its git specific folders and files. 
