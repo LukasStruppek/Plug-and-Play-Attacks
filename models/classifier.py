@@ -338,8 +338,9 @@ class Classifier(BaseModel):
                     trainloader)
 
             # Update the RTPT
-            rtpt.step(
-                subtitle=f"loss={running_total_loss / len(trainloader):.4f}")
+            if rtpt:
+                rtpt.step(
+                    subtitle=f"loss={running_total_loss / len(trainloader):.4f}")
 
             # make the lr scheduler step
             if lr_scheduler is not None:
