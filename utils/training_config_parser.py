@@ -17,6 +17,7 @@ from utils.datasets import get_normalization
 
 
 class TrainingConfigParser:
+
     def __init__(self, config_file):
         with open(config_file, 'r') as file:
             config = yaml.safe_load(file)
@@ -54,12 +55,14 @@ class TrainingConfigParser:
                                   transform=data_transformation_test)
         elif name == 'stanford_dogs_uncropped':
             train_set = StanfordDogs(train=True, cropped=False)
-            test_set = StanfordDogs(train=False, cropped=False,
-                                        transform=data_transformation_test)
+            test_set = StanfordDogs(train=False,
+                                    cropped=False,
+                                    transform=data_transformation_test)
         elif name == 'stanford_dogs_cropped':
             train_set = StanfordDogs(train=True, cropped=True)
-            test_set = StanfordDogs(train=False, cropped=True,
-                                        transform=data_transformation_test)
+            test_set = StanfordDogs(train=False,
+                                    cropped=True,
+                                    transform=data_transformation_test)
 
         else:
             raise Exception(
@@ -121,7 +124,7 @@ class TrainingConfigParser:
 
         transformation_list = []
         # resize images to the expected size
-        transformation_list.append(T.Resize(image_size))
+        transformation_list.append(T.Resize(image_size, antialias=True))
         transformation_list.append(T.ToTensor())
         if mode == 'training' and 'transformations' in self._config:
             transformations = self._config['transformations']
@@ -133,13 +136,15 @@ class TrainingConfigParser:
                         )
                     else:
                         transformation_class = getattr(T, transform)
-                        transformation_list.append(transformation_class(**args))
+                        transformation_list.append(
+                            transformation_class(**args))
 
         elif mode == 'test' and 'celeba' in dataset_name:
             if isinstance(image_size, list):
                 transformation_list.append(T.CenterCrop(image_size))
             else:
-                transformation_list.append(T.CenterCrop((image_size, image_size)))
+                transformation_list.append(
+                    T.CenterCrop((image_size, image_size)))
         elif mode == 'test':
             pass
         else:
