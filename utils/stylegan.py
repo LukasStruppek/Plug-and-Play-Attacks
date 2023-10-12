@@ -23,7 +23,7 @@ def adjust_gen_images(imgs: torch.tensor,
     imgs = torch.where(imgs > upper_bound, upper_bound, imgs)
     imgs = torch.where(imgs < lower_bound, lower_bound, imgs)
     imgs = F.center_crop(imgs, (700, 700))
-    imgs = F.resize(imgs, size)
+    imgs = F.resize(imgs, size, antialias=True)
     return imgs
 
 
@@ -63,16 +63,17 @@ def create_image(w,
         for i in range(math.ceil(w_expanded.shape[0] / batch_size)):
             w_batch = w_expanded[i * batch_size:(i + 1) * batch_size]
             imgs_generated = generator(w_batch,
-                                                 noise_mode='const',
-                                                 force_fp32=True)
+                                       noise_mode='const',
+                                       force_fp32=True)
             imgs.append(imgs_generated.cpu())
 
         imgs = torch.cat(imgs, dim=0)
         if crop_size is not None:
             imgs = F.center_crop(imgs, (crop_size, crop_size))
         if resize is not None:
-            imgs = F.resize(imgs, resize)
+            imgs = F.resize(imgs, resize, antialias=True)
         return imgs
+
 
 def load_generator(filepath):
     """Load pre-trained generator using the running average of the weights ('ema').

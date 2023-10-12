@@ -11,7 +11,9 @@ from utils.stylegan import create_image
 
 
 class DistanceEvaluation():
-    def __init__(self, model, generator, img_size, center_crop_size, dataset, seed):
+
+    def __init__(self, model, generator, img_size, center_crop_size, dataset,
+                 seed):
         self.device = 'cuda' if torch.cuda.is_available() else 'cpu'
         self.dataset_name = dataset
         self.model = model
@@ -25,32 +27,38 @@ class DistanceEvaluation():
         # Build the datasets
         if self.dataset_name == 'facescrub':
             transform = T.Compose([
-                T.Resize((self.img_size, self.img_size)),
+                T.Resize((self.img_size, self.img_size), antialias=True),
                 T.ToTensor(),
                 T.Normalize(mean=[0.5, 0.5, 0.5], std=[0.5, 0.5, 0.5])
             ])
-            train_set = FaceScrub(group='all', train=True,
-                                  transform=transform, split_seed=self.seed)
+            train_set = FaceScrub(group='all',
+                                  train=True,
+                                  transform=transform,
+                                  split_seed=self.seed)
         elif self.dataset_name == 'celeba_identities':
             transform = T.Compose([
-                T.Resize(self.img_size),
+                T.Resize(self.img_size, antialias=True),
                 T.ToTensor(),
                 T.CenterCrop((self.img_size, self.img_size)),
                 T.Normalize(mean=[0.5, 0.5, 0.5], std=[0.5, 0.5, 0.5])
             ])
-            train_set = CelebA1000(
-                train=True, transform=transform, split_seed=self.seed)
+            train_set = CelebA1000(train=True,
+                                   transform=transform,
+                                   split_seed=self.seed)
         elif 'stanford_dogs' in self.dataset_name:
             transform = T.Compose([
-                T.Resize((self.img_size, self.img_size)),
+                T.Resize((self.img_size, self.img_size), antialias=True),
                 T.ToTensor(),
                 T.Normalize(mean=[0.5, 0.5, 0.5], std=[0.5, 0.5, 0.5])
             ])
-            train_set = StanfordDogs(
-                train=True, cropped=True, transform=transform, split_seed=self.seed)
+            train_set = StanfordDogs(train=True,
+                                     cropped=True,
+                                     transform=transform,
+                                     split_seed=self.seed)
         else:
             raise RuntimeError(
-                f'{self.dataset_name} is no valid dataset name. Chose of of [facescrub, celeba_identities, stanford_dogs].')
+                f'{self.dataset_name} is no valid dataset name. Chose of of [facescrub, celeba_identities, stanford_dogs].'
+            )
 
         return train_set
 
@@ -74,7 +82,9 @@ class DistanceEvaluation():
                     target_embeddings.append(outputs.cpu())
 
             attack_embeddings = []
-            for w_batch in DataLoader(TensorDataset(w_masked), batch_size, shuffle=False):
+            for w_batch in DataLoader(TensorDataset(w_masked),
+                                      batch_size,
+                                      shuffle=False):
                 with torch.no_grad():
                     w_batch = w_batch[0].to(self.device)
                     imgs = create_image(w_batch,
@@ -89,8 +99,8 @@ class DistanceEvaluation():
 
             target_embeddings = torch.cat(target_embeddings, dim=0)
             attack_embeddings = torch.cat(attack_embeddings, dim=0)
-            distances = torch.cdist(
-                attack_embeddings, target_embeddings, p=2).cpu()
+            distances = torch.cdist(attack_embeddings, target_embeddings,
+                                    p=2).cpu()
             distances = distances**2
             distances, _ = torch.min(distances, dim=1)
             smallest_distances.append(distances.cpu())
@@ -98,7 +108,8 @@ class DistanceEvaluation():
 
             if rtpt:
                 rtpt.step(
-                    subtitle=f'Distance Evaluation step {step} of {len(target_values)}')
+                    subtitle=
+                    f'Distance Evaluation step {step} of {len(target_values)}')
 
         smallest_distances = torch.cat(smallest_distances, dim=0)
         return smallest_distances.mean(), mean_distances_list
@@ -108,7 +119,7 @@ class DistanceEvaluation():
         self.model.to(self.device)
         closest_imgs = []
         smallest_distances = []
-        resize = Resize((self.img_size, self.img_size))
+        resize = Resize((self.img_size, self.img_size), antialias=True)
         for img, target in zip(imgs, targets):
             img = img.to(self.device)
             img = resize(img)
