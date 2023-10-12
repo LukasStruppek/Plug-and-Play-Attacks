@@ -11,8 +11,7 @@ def scores_by_transform(imgs,
                         transforms,
                         iterations=100):
 
-    score = torch.zeros_like(
-        targets, dtype=torch.float32).to(imgs.device)
+    score = torch.zeros_like(targets, dtype=torch.float32).to(imgs.device)
 
     with torch.no_grad():
         for i in range(iterations):
@@ -24,8 +23,17 @@ def scores_by_transform(imgs,
     return score
 
 
-def perform_final_selection(w, generator, config, targets, target_model, samples_per_target,
-                            approach, iterations, batch_size, device, rtpt=None):
+def perform_final_selection(w,
+                            generator,
+                            config,
+                            targets,
+                            target_model,
+                            samples_per_target,
+                            approach,
+                            iterations,
+                            batch_size,
+                            device,
+                            rtpt=None):
     target_values = set(targets.cpu().tolist())
     final_targets = []
     final_w = []
@@ -35,12 +43,13 @@ def perform_final_selection(w, generator, config, targets, target_model, samples
         transforms = T.Compose([
             T.RandomResizedCrop(size=(224, 224),
                                 scale=(0.5, 0.9),
-                                ratio=(0.8, 1.2)),
+                                ratio=(0.8, 1.2),
+                                antialias=True),
             T.RandomHorizontalFlip(0.5)
         ])
 
     for step, target in enumerate(target_values):
-        mask = torch.where(targets == target, True, False)
+        mask = torch.where(targets == target, True, False).cpu()
         w_masked = w[mask]
         candidates = create_image(w_masked,
                                   generator,
@@ -53,11 +62,9 @@ def perform_final_selection(w, generator, config, targets, target_model, samples
         for imgs, t in DataLoader(dataset, batch_size=batch_size):
             imgs, t = imgs.to(device), t.to(device)
 
-            scores.append(scores_by_transform(imgs,
-                                                  t,
-                                                  target_model,
-                                                  transforms,
-                                                  iterations))
+            scores.append(
+                scores_by_transform(imgs, t, target_model, transforms,
+                                    iterations))
         scores = torch.cat(scores, dim=0).cpu()
         indices = torch.sort(scores, descending=True).indices
         selected_indices = indices[:samples_per_target]
@@ -66,7 +73,8 @@ def perform_final_selection(w, generator, config, targets, target_model, samples
 
         if rtpt:
             rtpt.step(
-                subtitle=f'Sample Selection step {step} of {len(target_values)}')
+                subtitle=f'Sample Selection step {step} of {len(target_values)}'
+            )
     final_targets = torch.cat(final_targets, dim=0)
     final_w = torch.cat(final_w, dim=0)
     return final_w, final_targets

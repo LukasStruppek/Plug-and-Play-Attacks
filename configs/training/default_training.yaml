@@ -2,7 +2,7 @@
 seed: 42
 
 model:
-  architecture: resnest101  # Model architecture, e.g., resnet50, densenet169, inceptionv3.
+  architecture: resnet152  # Model architecture, e.g., resnet50, densenet169, inceptionv3.
   num_classes: 530 # Number of classes in the training set.
   pretrained: true # Using the ImageNet weights for initialization.
 
@@ -19,6 +19,7 @@ transformations: # Transformations applied during training.
     size: [224, 224]
     scale: [0.75, 1]
     ratio: [1, 1]
+    antialias: true
   ColorJitter:
     brightness: 0.2
     contrast: 0.2
@@ -52,7 +53,7 @@ wandb: # Options for WandB logging.
   enable_logging: true # Set to true to activate the logging.
   args: # Arguments for wandb.init call. See https://docs.wandb.ai/ref/python/init for a complete overview.
     project: model_inversion_targets
-    name: ResNeSt101_FaceScrub
+    name: ResNet152_FaceScrub
     save_code: true
     notes: Training a target model
     tags:

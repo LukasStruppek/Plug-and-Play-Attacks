@@ -69,13 +69,13 @@ def find_initial_w(generator,
             if center_crop is not None:
                 imgs = F.center_crop(imgs, (center_crop, center_crop))
             if resize is not None:
-                imgs = [F.resize(imgs, resize)]
+                imgs = [F.resize(imgs, resize, antialias=True)]
             if horizontal_flip:
                 imgs.append(F.hflip(imgs[0]))
             if five_crop:
                 cropped_images = []
                 for im in imgs:
-                    cropped_images += list(five_crop(im))
+                    cropped_images += list(F.five_crop(im))
                 imgs = cropped_images
 
             target_conf = None
@@ -97,9 +97,7 @@ def find_initial_w(generator,
 
     final_candidates = torch.cat(final_candidates, dim=0).to(device)
     final_confidences = [np.round(c, 2) for c in final_confidences]
-    print(
-        f'Found {final_candidates.shape[0]} initial style vectors.'
-    )
+    print(f'Found {final_candidates.shape[0]} initial style vectors.')
 
     if filepath:
         torch.save(final_candidates, filepath)

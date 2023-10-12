@@ -122,7 +122,7 @@ To define the model and training configuration, you need to create a configurati
 
 After a training configuration file has been created, run the following command to start the training with the specified configuration:
 ```bash
-python train_target.py -c=configs/training/default_training.yaml
+python train_model.py -c=configs/training/default_training.yaml
 ```
 After the optimization is performed, the results are automatically evaluated. All results together with the initial, optimized, and selected latent vectors are stored at WandB.
 

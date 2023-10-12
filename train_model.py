@@ -36,6 +36,9 @@ def main():
 
     # Create the target model architecture
     target_model = config.create_model()
+    if torch.__version__.startswith('2.'):
+        print('Compiling model with torch.compile')
+        target_model.model = torch.compile(target_model.model)
 
     # Build the datasets
     train_set, valid_set, test_set = config.create_datasets()
@@ -51,7 +54,7 @@ def main():
     rtpt = config.create_rtpt()
     rtpt.start()
 
-    # modify the save_path such that subfolders with a timestamp and the name of the run are created
+    # Modify the save_path such that subfolders with a timestamp and the name of the run are created
     time_stamp = time.strftime("%Y%m%d_%H%M%S")
     save_path = os.path.join(config.training['save_path'],
                              f"{config.model['architecture']}_{time_stamp}")

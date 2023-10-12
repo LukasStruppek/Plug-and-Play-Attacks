@@ -2,7 +2,7 @@
 seed: 42
 
 model:
-  architecture: resnest101
+  architecture: resnet152
   num_classes: 120
   pretrained: true
 
@@ -16,6 +16,7 @@ transformations:
     size: [224, 224]
     scale: [0.85, 1]
     ratio: [1, 1]
+    antialias: true
   ColorJitter:
     brightness: 0.2
     contrast: 0.2
@@ -49,5 +50,5 @@ wandb:
   enable_logging: true
   args:
     project: model_inversion_targets_dogs
-    name: ResNeSt101_Stanford_Dogs
+    name: ResNet152_Stanford_Dogs
     save_code: true

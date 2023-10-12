@@ -9,11 +9,19 @@ from metrics.accuracy import Accuracy, AccuracyTopK
 
 
 class ClassificationAccuracy():
+
     def __init__(self, evaluation_network, device='cuda:0'):
         self.evaluation_network = evaluation_network
         self.device = device
 
-    def compute_acc(self, w, targets, generator, config, batch_size=64, resize=299, rtpt=None):
+    def compute_acc(self,
+                    w,
+                    targets,
+                    generator,
+                    config,
+                    batch_size=64,
+                    resize=299,
+                    rtpt=None):
         self.evaluation_network.eval()
         self.evaluation_network.to(self.device)
         dataset = TensorDataset(w, targets)
@@ -27,13 +35,15 @@ class ClassificationAccuracy():
         max_iter = math.ceil(len(dataset) / batch_size)
 
         with torch.no_grad():
-            for step, (w_batch, target_batch) in enumerate(DataLoader(dataset,
-                                                                      batch_size=batch_size,
-                                                                      shuffle=False)):
+            for step, (w_batch, target_batch) in enumerate(
+                    DataLoader(dataset, batch_size=batch_size, shuffle=False)):
                 w_batch, target_batch = w_batch.to(
                     self.device), target_batch.to(self.device)
-                imgs = create_image(
-                    w_batch, generator, config.attack_center_crop, resize=resize, batch_size=batch_size)
+                imgs = create_image(w_batch,
+                                    generator,
+                                    config.attack_center_crop,
+                                    resize=resize,
+                                    batch_size=batch_size)
                 imgs = imgs.to(self.device)
                 output = self.evaluation_network(imgs)
 
@@ -52,8 +62,7 @@ class ClassificationAccuracy():
 
             acc_top1 = acc_top1.compute_metric()
             acc_top5 = acc_top5.compute_metric()
-            correct_confidences = torch.cat(correct_confidences,
-                                            dim=0)
+            correct_confidences = torch.cat(correct_confidences, dim=0)
             avg_correct_conf = correct_confidences.mean().cpu().item()
             confidences = torch.cat(total_confidences, dim=0).cpu()
             confidences = torch.flatten(confidences)
@@ -67,18 +76,20 @@ class ClassificationAccuracy():
             target_list = targets.cpu().tolist()
             precision_list = [['target', 'mean_conf', 'precision']]
             for t in set(target_list):
-                mask = torch.where(targets == t, True, False)
+                mask = torch.where(targets == t, True, False).cpu()
                 conf_masked = confidences[mask]
-                precision = torch.sum(
-                    predictions[mask] == t) / torch.sum(targets == t)
+                precision = torch.sum(predictions[mask] == t) / torch.sum(
+                    targets == t)
                 precision_list.append(
-                    [t, conf_masked.mean().item(), precision.cpu().item()])
+                    [t, conf_masked.mean().item(),
+                     precision.cpu().item()])
             confidences = confidences.tolist()
             predictions = predictions.tolist()
 
             if rtpt:
                 rtpt.step(
-                    subtitle=f'Classification Evaluation step {step} of {max_iter}')
+                    subtitle=
+                    f'Classification Evaluation step {step} of {max_iter}')
 
         return acc_top1, acc_top5, predictions, avg_correct_conf, avg_total_conf, \
             confidences, maximum_confidences, precision_list
