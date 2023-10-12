@@ -26,10 +26,12 @@ attack:
   transformations:
     Resize:
       size: 224
+      antialias: true
     RandomResizedCrop:
       size: [224, 224]
       scale: [0.75, 1.0]
       ratio: [1.0, 1.0]
+      antialias: true
 
   optimizer:
     Adam:
