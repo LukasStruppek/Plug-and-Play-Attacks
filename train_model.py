@@ -7,7 +7,7 @@ import torch
 
 from metrics.accuracy import Accuracy
 from utils.training_config_parser import TrainingConfigParser
-
+from losses import label_smoothing
 
 def main():
     # Define and parse arguments
@@ -43,7 +43,16 @@ def main():
     # Build the datasets
     train_set, valid_set, test_set = config.create_datasets()
 
-    criterion = torch.nn.CrossEntropyLoss()
+    # Define loss function
+    if config.label_smoothing < 0:
+        criterion = label_smoothing.CrossEntropyLoss(
+            label_smoothing=config.label_smoothing)
+    else:
+        criterion = torch.nn.CrossEntropyLoss(
+            label_smoothing=config.label_smoothing)
+    print(f'Training with label smoothing factor {config.label_smoothing}')
+        
+    # Define evaluation metric
     metric = Accuracy
 
     # Set up optimizer and scheduler

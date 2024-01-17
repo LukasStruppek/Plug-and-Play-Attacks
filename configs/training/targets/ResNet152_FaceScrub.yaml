@@ -39,6 +39,7 @@ lr_scheduler:
 training:
   num_epochs: 100
   batch_size: 128
+  label_smoothing: -0.1
   dataloader_num_workers: 8
   save_path: results/
 

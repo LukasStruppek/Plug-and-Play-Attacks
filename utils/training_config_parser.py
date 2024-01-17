@@ -226,3 +226,10 @@ class TrainingConfigParser:
     @property
     def wandb(self):
         return self._config['wandb']
+
+    @property
+    def label_smoothing(self):
+        if 'label_smoothing' in self._config['training']:
+            return self._config['training']['label_smoothing']
+        else:
+            return 0.0

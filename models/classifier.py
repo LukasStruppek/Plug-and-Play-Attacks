@@ -200,7 +200,8 @@ class Classifier(BaseModel):
             enable_logging=False,
             wandb_init_args=None,
             save_base_path="",
-            config_file=None):
+            config_file=None,
+            ls_scheduler=None):
 
         trainloader = DataLoader(training_data,
                                  batch_size=batch_size,
@@ -227,7 +228,8 @@ class Classifier(BaseModel):
                 'Pretrained': self.pretrained,
                 'Optimizer': optimizer,
                 'Trainingset_size': len(training_data),
-                'num_classes': self.num_classes,
+                'Num_classes': self.num_classes,
+                'Label_smoothing': criterion.label_smoothing,
                 'Total_parameters':
                 self.count_parameters(only_trainable=False),
                 'Trainable_parameters':
@@ -280,6 +282,12 @@ class Classifier(BaseModel):
             metric_train.reset()
             self.train()
             self.to(self.device)
+            
+            # apply label smoothing scheduler
+            if ls_scheduler:
+                ls_alpha = ls_scheduler(epoch)
+                criterion.label_smoothing = ls_alpha
+            
             for inputs, labels in tqdm(trainloader,
                                        desc='training',
                                        leave=False,
