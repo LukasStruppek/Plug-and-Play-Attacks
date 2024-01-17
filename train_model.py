@@ -47,9 +47,20 @@ def main():
     if config.label_smoothing < 0:
         criterion = label_smoothing.CrossEntropyLoss(
             label_smoothing=config.label_smoothing)
+        
+        def ls_scheduler(epoch):
+            if epoch < 50:
+                return 0.0
+            elif epoch < 75:
+                factor = 1 / (config.training['num_epochs'] - 50)
+                return config.label_smoothing * factor * (epoch + 1 - 50)
+            else:
+                return config.label_smoothing
     else:
         criterion = torch.nn.CrossEntropyLoss(
             label_smoothing=config.label_smoothing)
+        ls_scheduler = None
+        
     print(f'Training with label smoothing factor {config.label_smoothing}')
         
     # Define evaluation metric
