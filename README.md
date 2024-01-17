@@ -1,4 +1,5 @@
-# Plug & Play Attacks: Towards Robust and Flexible Model Inversion Attacks (ICML 2022)
+# _Plug & Play Attacks: Towards Robust and Flexible Model Inversion Attacks_ (ICML 2022)
+# _Be Careful What You Smooth For: Label Smoothing Can Be a Privacy Shield but Also a Catalyst for Model Inversion Attacks_ (ICLR 2024)
 
   <center>
   <img src="images/ppa_samples.jpg" alt="PPA Examples"  height=260>
