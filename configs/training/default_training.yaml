@@ -42,6 +42,7 @@ lr_scheduler: # Option to provide a learning rate scheduler from torch.optim.
 training: # Select the training parameters.
   num_epochs: 5
   batch_size: 128
+  label_smoothing: 0.0
   dataloader_num_workers: 8
   save_path: results/
 
