@@ -12,3 +12,5 @@ torch==2.0.0+cu117
 torchvision==0.15.1+cu117
 timm==0.6.13
 torchmetrics==1.2.0
+jupyter==1.0.0
+seaborn==0.13.1
