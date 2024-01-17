@@ -127,6 +127,8 @@ python train_model.py -c=configs/training/default_training.yaml
 ```
 After the optimization is performed, the results are automatically evaluated. All results together with the initial, optimized, and selected latent vectors are stored at WandB.
 
+__Note for training with label smoothing__: To train models with label smoothing regularization, simply adjust the ```label_smoothing``` parameter in the training config. If no parameter is specified, the smoothing factor is set to ```0.0```. For training with a negative smoothing factor, a scheduler is used by default to stabilize the training process. To use a custom scheduler, simply adjust the ```ls_scheduler``` function in ```train_model.py```.
+
 ## Perform Attacks
 To perform our attacks, prepare an attack configuration file including the WandB run paths of the target and evaluation models. We provide an example configuration with explanations at ```configs/attacking/default_attacking.yaml```. We further provide configuration files to reproduce the various attack results stated in our paper. You only need to adjust the run paths for each dataset combination, and possibly the batch size.
 
@@ -135,6 +137,13 @@ After an attack configuration file has been created, run the following command t
 python attack.py -c=configs/attacking/default_attacking.yaml
 ```
 All results including the metrics will be stored at WandB for easy tracking and comparison.
+
+## Compute Knowledge Extraction Score
+We decided to exclude the knowledge extraction score from being automatically computed after the attack is finished due to the high additional computation time. Instead, training the student model to compute the score has to be manually started by running ```knowledge_extraction_score.py``` using the WandB run path of the finished attack.
+```bash
+python knowledge_extraction_score.py -r=username/model_inversion_attacks/xxxxxxxx -d=FaceScrub
+```
+The computed knowledge extraction scores are automatically stored in the WandB run summary.
 
 ## Citation
 If you build upon our work, please don't forget to cite us.
@@ -148,6 +157,13 @@ If you build upon our work, please don't forget to cite us.
     publisher = {PMLR},
     year={2022}
 }
+
+@inproceedings{struppek24smoothing,
+  author = {Lukas Struppek and Dominik Hintersdorf and Kristian Kersting},
+  title = {Be Careful What You Smooth For: Label Smoothing Can Be a Privacy Shield but Also a Catalyst for Model Inversion Attacks},
+  booktitle = {The Twelfth International Conference on Learning Representations (ICLR)},
+  year = {2024},
+}
 ```
 
 ## Implementation Credits
@@ -156,3 +172,4 @@ For license details, refer to the corresponding files in our repo. For more deta
 - FID Score: https://github.com/mseitzer/pytorch-fid
 - Stanford Dogs Dataset Class: https://github.com/zrsmithson/Stanford-dogs
 - FaceNet: https://github.com/timesler/facenet-pytorch
+- Negative Label Smoothing: https://github.com/UCSC-REAL/negative-label-smoothing
