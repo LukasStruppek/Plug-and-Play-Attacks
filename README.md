@@ -1,6 +1,4 @@
 # _Plug & Play Attacks: Towards Robust and Flexible Model Inversion Attacks_ (ICML 2022)
-# _Be Careful What You Smooth For: Label Smoothing Can Be a Privacy Shield but Also a Catalyst for Model Inversion Attacks_ (ICLR 2024)
-
   <center>
   <img src="images/ppa_samples.jpg" alt="PPA Examples"  height=260>
   </center>
@@ -8,6 +6,15 @@
 > **Abstract:**
 > *Model inversion attacks (MIAs) aim to create synthetic images that reflect the class-wise characteristics from a target classifier's private training data by exploiting the model's learned knowledge. Previous research has developed generative MIAs that use generative adversarial networks (GANs) as image priors tailored to a specific target model. This makes the attacks time- and resource-consuming, inflexible, and susceptible to distributional shifts between datasets. To overcome these drawbacks, we present Plug & Play Attacks, which relax the dependency between the target model and image prior, and enable the use of a single GAN to attack a wide range of targets, requiring only minor adjustments to the attack. Moreover, we show that powerful MIAs are possible even with publicly available pre-trained GANs and under strong distributional shifts, for which previous approaches fail to produce meaningful results. Our extensive evaluation confirms the improved robustness and flexibility of Plug & Play Attacks and their ability to create high-quality images revealing sensitive class characteristics.*  
 [Full Paper (PDF)](https://arxiv.org/pdf/2201.12179.pdf)
+
+# _Be Careful What You Smooth For: Label Smoothing Can Be a Privacy Shield but Also a Catalyst for Model Inversion Attacks_ (ICLR 2024)
+  <center>
+  <img src="images/label_smoothing.jpg" alt="PPA Examples"  height=280>
+  </center>
+
+> **Abstract:**
+> *Label smoothing – using softened labels instead of hard ones – is a widely adopted regularization method for deep learning, showing diverse benefits such as enhanced generalization and calibration. Its implications for preserving model privacy, however, have remained unexplored. To fill this gap, we investigate the impact of label smoothing on model inversion attacks (MIAs), which aim to generate class-representative samples by exploiting the knowledge encoded in a classifier, thereby inferring sensitive information about its training data. Through extensive analyses, we uncover that traditional label smoothing fosters MIAs, thereby increasing a model's privacy leakage. Even more, we reveal that smoothing with negative factors counters this trend, impeding the extraction of class-related information and leading to privacy preservation, beating state-of-the-art defenses. This establishes a practical and powerful novel way for enhancing model resilience against MIAs.*  
+[Full Paper (PDF)](https://arxiv.org/pdf/2310.06549.pdf)
 
 ## Model Inversion Attacks
   <center>
