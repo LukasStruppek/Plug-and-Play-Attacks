@@ -37,10 +37,12 @@ def load_model(run_path,
                                root='./weights',
                                replace=replace)
 
-    # Load weights from local file
-    model.load_state_dict(
-        torch.load(file_model.name, map_location='cpu')['model_state_dict'])
+    # Change keys from compiled model weights
+    weights = torch.load(file_model.name,
+                         map_location='cpu')['model_state_dict']
+    weights = {k.replace('_orig_mod.', ''): v for k, v in weights.items()}
 
+    model.load_state_dict(weights)
     model.wandb_name = run.name
 
     return model
