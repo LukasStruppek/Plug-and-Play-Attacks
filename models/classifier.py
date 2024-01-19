@@ -60,7 +60,7 @@ class Classifier(BaseModel):
                 model = resnet.resnet152(weights=weights)
             else:
                 raise RuntimeError(
-                    f'No RationalResNet with the name {architecture} available'
+                    f'No ResNet with the name {architecture} available'
                 )
 
             if self.num_classes != model.fc.out_features:
