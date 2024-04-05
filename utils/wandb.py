@@ -22,7 +22,7 @@ def load_model(run_path,
 
     # Create model
     if num_classes is None:
-        num_classes = run.config["num_classes"]
+        num_classes = run.config["Num_classes"]
 
     if config:
         model = config.create_model()
