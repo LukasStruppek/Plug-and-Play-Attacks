@@ -96,7 +96,8 @@ def main():
         enable_logging=config.wandb['enable_logging'],
         wandb_init_args=config.wandb['args'],
         save_base_path=save_path,
-        config_file=args.config)
+        config_file=args.config,
+        ls_scheduler=ls_scheduler)
 
 
 if __name__ == '__main__':
