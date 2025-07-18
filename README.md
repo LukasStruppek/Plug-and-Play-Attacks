@@ -1,4 +1,5 @@
 # _Plug & Play Attacks: Towards Robust and Flexible Model Inversion Attacks_ (ICML 2022)
+[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/LukasStruppek/Plug-and-Play-Attacks)
   <center>
   <img src="images/ppa_samples.jpg" alt="PPA Examples"  height=260>
   </center>
